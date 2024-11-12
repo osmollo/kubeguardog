@@ -11,4 +11,5 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(name=__name__)
+logging.getLogger("urllib3").propagate = False
 coloredlogs.install(logger=logger, isatty=True)
