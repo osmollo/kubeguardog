@@ -39,14 +39,17 @@ def get_pods():
             logger.error(f"{i.status.pod_ip}\t{i.metadata.namespace}\t{i.metadata.name}\t{i.status.phase}\t{restart_count}")
 
     if restarted_pod:
+        v1 = client.CoreV1Api()
+        node = v1.list_node().items[0]
+        cluster_name = node.metadata.annotations.get('cluster.x-k8s.io/cluster-name')
         if 'TELEGRAM_TOKEN' in os.environ and 'TELEGRAM_CHAT_ID' in os.environ:
-            v1 = client.CoreV1Api()
-            node = v1.list_node().items[0]
-            cluster_name = node.metadata.annotations.get('cluster.x-k8s.io/cluster-name')
             send_telegram_message(token=os.environ.get('TELEGRAM_TOKEN'),
                                   chat_id=os.environ.get('TELEGRAM_CHAT_ID'),
                                   text=f"K8s cluster *{cluster_name}* has restarted pods:\n\n{'\n'.join(pods)}")
         if 'WEBHOOK_URL' in os.environ:
+            data_to_send = {
+                "cluster_name": cluster_name,
+            }
             pass
 
 
