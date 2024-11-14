@@ -3,8 +3,9 @@
 - [CHANGELOG](#changelog)
   - [VERSION 0.1](#version-01)
   - [VERSION 0.2](#version-02)
-    - [VERSION 0.2.1](#version-021)
+    - [FIX 0.2.1](#fix-021)
   - [VERSION 0.3](#version-03)
+    - [FIX 0.3.1](#fix-031)
 
 ## VERSION 0.1
 
@@ -15,7 +16,7 @@
 
 - Send Telegram notifications when there are restarted pods
 
-### VERSION 0.2.1
+### FIX 0.2.1
 
 - Disable urllib3 warnings
 
@@ -23,3 +24,7 @@
 
 - Instead show pod information in logs, this version shows a formatted table
 - No `INFO` traces are logged, just `DEBUG` and `ERROR`
+
+### FIX 0.3.1
+
+- Fix docker image name in [README.md](README.md)
