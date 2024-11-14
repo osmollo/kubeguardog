@@ -14,4 +14,4 @@ COPY src/*.py .
 
 ENV TZ="Europe/Madrid"
 
-ENTRYPOINT ["python3"]
+ENTRYPOINT ["python3", "kubeguardog.py"]

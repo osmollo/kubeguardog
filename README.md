@@ -34,7 +34,7 @@
 ```shell
 docker run -ti --rm --network host \
 -v ~/kubeconfig/ef1bau.yaml:/kubeconfig.yaml \
-osmollo/kubeguardog:latest kubeguardog.py
+osmollo/kubeguardog:latest
 ```
 
 ### List pods of namespace `example-ns`:
@@ -43,7 +43,7 @@ osmollo/kubeguardog:latest kubeguardog.py
 docker run -ti --rm --network host \
 -v ~/kubeconfig/ef1bau.yaml:/kubeconfig.yaml \
 -e NAMESPACE=example-ns \
-osmollo/kubeguardog:latest kubeguardog.py
+osmollo/kubeguardog:latest
 ```
 
 ### Send notifications to Telegram:
@@ -54,7 +54,7 @@ docker run -ti --rm --network host \
 -e NAMESPACE=example-ns \
 -e TELEGRAM_TOKEN="<TELEGRAM_TOKEN>" \
 -e TELEGRAM_CHAT_ID=<TELEGRAM_CHAT_ID" \
-osmollo/kubeguardog:latest kubeguardog.py
+osmollo/kubeguardog:latest
 ```
 
 ## Alternative motherfucking way
