@@ -6,6 +6,7 @@
     - [FIX 0.2.1](#fix-021)
   - [VERSION 0.3](#version-03)
     - [FIX 0.3.1](#fix-031)
+    - [FIX 0.3.2](#fix-032)
 
 ## VERSION 0.1
 
@@ -28,3 +29,7 @@
 ### FIX 0.3.1
 
 - Fix docker image name in [README.md](README.md)
+
+### FIX 0.3.2
+
+- Changed entrypoint in [Dockerfile](Dockerfile) to include python script
