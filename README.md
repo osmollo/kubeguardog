@@ -18,7 +18,6 @@
 |---|---|:---:|:---:|
 |NAMESPACE|List pods of this namespace|`all`|NO|
 |LOG_LEVEL|Logging level|`INFO`|NO|
-|WEBHOOK_URL|Webhook URL for sending events||NO|
 |TELEGRAM_TOKEN|Token for Telegram authentication||NO|
 |TELEGRAM_CHAT_ID|ID of the Telegram user/group to send notifications||NO1
 

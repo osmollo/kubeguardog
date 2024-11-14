@@ -8,6 +8,7 @@ from telegram import send_telegram_message
 from socket import gaierror
 from urllib3.exceptions import NameResolutionError, MaxRetryError
 from kubernetes import client, config
+from tabulate import tabulate
 
 
 def check_kubeconfig() -> None:
@@ -21,6 +22,10 @@ def get_pods():
     config.load_kube_config(config_file=KUBECONFIG_PATH)
 
     kubectl = client.CoreV1Api()
+    v1 = client.CoreV1Api()
+    node = v1.list_node().items[0]
+    cluster_name = node.metadata.annotations.get('cluster.x-k8s.io/cluster-name')
+
     if 'NAMESPACE' in os.environ:
         ret = kubectl.list_namespaced_pod(namespace=os.environ.get('NAMESPACE'),
                                           watch=False,
@@ -30,21 +35,21 @@ def get_pods():
 
     restarted_pod = False
     pods = []
+    headers = ['CLUSTER_NAME', 'POD NAME', 'NAMESPACE', 'IP', 'STATUS', 'RESTARTS']
     for i in ret.items:
         # Obtener la edad del Pod
         restart_count = i.status.container_statuses[0].restart_count
         if restart_count > 0:
             restarted_pod = True
-            pods.append(i.metadata.name.replace("-", "\\-"))
-            logger.error(f"{i.status.pod_ip}\t{i.metadata.namespace}\t{i.metadata.name}\t{i.status.phase}\t{restart_count}")
+            pods.append([cluster_name, i.metadata.name, i.metadata.namespace, i.status.pod_ip, i.status.phase, restart_count])
+    print(tabulate(tabular_data=pods,
+                   headers=headers,
+                   tablefmt='rounded_outline'))
 
     if restarted_pod and 'TELEGRAM_TOKEN' in os.environ and 'TELEGRAM_CHAT_ID' in os.environ:
-        v1 = client.CoreV1Api()
-        node = v1.list_node().items[0]
-        cluster_name = node.metadata.annotations.get('cluster.x-k8s.io/cluster-name')
         send_telegram_message(token=os.environ.get('TELEGRAM_TOKEN'),
                               chat_id=os.environ.get('TELEGRAM_CHAT_ID'),
-                              text=f"K8s cluster *{cluster_name}* has restarted pods:\n\n{'\n'.join(pods)}")
+                              text=f"K8s cluster *{cluster_name}* has restarted pods:\n\n{'\n'.join([x[1].replace('-', '\\-') for x in pods])}")
 
 
 def main() -> None:
