@@ -24,8 +24,8 @@ def send_telegram_message(token, chat_id, text) -> None:
 
     response = requests.post(url=url, data=json.dumps(payload), headers=headers)
     if response.status_code == 200:
-        logger.info(f"Telegram message sent to {chat_id}")
+        logger.debug(f"Telegram message sent to {chat_id}")
     else:
-        logger.error(f"Error sending telegram message to {chat_id} [status code: {response.status_code}]")
+        logger.error(f"Error sending telegram message to {chat_id} [status code: {response.status_code}]. REASON: {response.json()['description']}")
         print(f"Telegram URL: {url}")
         print(f"Body: {json.dumps(payload)}")
