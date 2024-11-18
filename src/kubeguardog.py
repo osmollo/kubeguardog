@@ -6,9 +6,10 @@ from common import KUBECONFIG_PATH
 from telegram import send_telegram_message
 
 from socket import gaierror
-from urllib3.exceptions import NameResolutionError, MaxRetryError
-from kubernetes import client, config
 from tabulate import tabulate
+from kubernetes import client, config
+from urllib3.exceptions import NameResolutionError, MaxRetryError
+from kubernetes.client.exceptions import ApiException
 
 
 def check_kubeconfig() -> None:
@@ -56,18 +57,21 @@ def main() -> None:
     check_kubeconfig()
     try:
         get_pods()
-    except ConnectionRefusedError:
-        logger.error(f"Connection refused")
+    except ConnectionRefusedError as e:
+        logger.error(msg=f"Connection refused: {e.reason}")
         exit(code=3)
-    except gaierror:
-        logger.error(f"Socket error")
+    except gaierror as e:
+        logger.error(msg=f"Socket error: {e.reason}")
         exit(code=4)
-    except NameResolutionError:
-        logger.error(f"Name resolution error")
+    except NameResolutionError as e:
+        logger.error(msg=f"Name resolution error: {e.reason}")
         exit(code=5)
-    except MaxRetryError:
-        logger.error(f"Max retries exceeded")
+    except MaxRetryError as e:
+        logger.error(msg=f"Max retries exceeded: {e.reason}")
         exit(code=6)
+    except ApiException as e:
+        logger.error(msg=f"API Exception: {e.reason}")
+        exit(code=7)
 
 
 if __name__ == "__main__":
