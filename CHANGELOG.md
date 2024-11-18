@@ -7,6 +7,7 @@
   - [VERSION 0.3](#version-03)
     - [FIX 0.3.1](#fix-031)
     - [FIX 0.3.2](#fix-032)
+    - [FIX 0.3.3](#fix-033)
 
 ## VERSION 0.1
 
@@ -33,3 +34,8 @@
 ### FIX 0.3.2
 
 - Changed entrypoint in [Dockerfile](Dockerfile) to include python script
+
+### FIX 0.3.3
+
+- Catch ApiException for unauthorized requests
+- Improved verbosity of logged errors
