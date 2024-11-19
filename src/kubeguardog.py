@@ -1,5 +1,6 @@
 import os
 import os.path
+import datetime
 
 from log import logger
 from common import KUBECONFIG_PATH
@@ -19,6 +20,18 @@ def check_kubeconfig() -> None:
     logger.debug(f"The file '{KUBECONFIG_PATH}' exists")
 
 
+def format_age(pod_age_timedelta) -> str:
+    if pod_age_timedelta.days > 0:
+        pod_age = f"{pod_age_timedelta.days}d"
+    elif pod_age_timedelta.seconds // 3600 > 0:
+        pod_age = f"{pod_age_timedelta.seconds // 3600}h"
+    elif pod_age_timedelta.seconds // 60 > 0:
+        pod_age = f"{pod_age_timedelta.seconds // 60}m"
+    else:
+        pod_age = f"{pod_age_timedelta.seconds}s"
+    return pod_age
+
+
 def get_pods():
     config.load_kube_config(config_file=KUBECONFIG_PATH)
 
@@ -36,13 +49,21 @@ def get_pods():
 
     restarted_pod = False
     pods = []
-    headers = ['CLUSTER_NAME', 'POD NAME', 'NAMESPACE', 'IP', 'STATUS', 'RESTARTS']
+    headers = ['CLUSTER_NAME', 'POD NAME', 'NAMESPACE', 'IP', 'STATUS', 'RESTARTS', 'AGE']
     for i in ret.items:
         # Obtener la edad del Pod
         restart_count = i.status.container_statuses[0].restart_count
         if restart_count > 0:
             restarted_pod = True
-            pods.append([cluster_name, i.metadata.name, i.metadata.namespace, i.status.pod_ip, i.status.phase, restart_count])
+            pod_start_time = i.status.start_time
+            pod_age_timedelta = datetime.datetime.now(datetime.timezone.utc) - pod_start_time
+            pods.append([cluster_name,
+                         i.metadata.name,
+                         i.metadata.namespace,
+                         i.status.pod_ip,
+                         i.status.phase,
+                         restart_count,
+                         format_age(pod_age_timedelta)])
     print(tabulate(tabular_data=pods,
                    headers=headers,
                    tablefmt='rounded_outline'))
