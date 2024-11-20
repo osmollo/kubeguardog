@@ -49,12 +49,19 @@ def get_pods():
 
     restarted_pod = False
     pods = []
-    headers = ['CLUSTER_NAME', 'POD NAME', 'NAMESPACE', 'IP', 'STATUS', 'RESTARTS', 'AGE']
+    headers = ['CLUSTER_NAME', 'POD NAME', 'NAMESPACE', 'IP', 'STATUS', 'RESTARTS', 'LAST RESTART', 'AGE']
     for i in ret.items:
         # Obtener la edad del Pod
         restart_count = i.status.container_statuses[0].restart_count
         if restart_count > 0:
             restarted_pod = True
+            datetime_obj = None
+            for condition in i.status.conditions:
+                print(condition)
+                if condition.type == "ContainerReady" or condition.type == "Ready":
+                    last_transition_time = condition.last_transition_time
+                    # Convertir la fecha a un formato más legible (opcional)
+                    datetime_obj = datetime.datetime.strptime(last_transition_time.strftime("%Y-%m-%dT%H:%M:%SZ"), "%Y-%m-%dT%H:%M:%SZ")
             pod_start_time = i.status.start_time
             pod_age_timedelta = datetime.datetime.now(datetime.timezone.utc) - pod_start_time
             pods.append([cluster_name,
@@ -63,6 +70,7 @@ def get_pods():
                          i.status.pod_ip,
                          i.status.phase,
                          restart_count,
+                         datetime_obj,
                          format_age(pod_age_timedelta)])
     print(tabulate(tabular_data=pods,
                    headers=headers,
